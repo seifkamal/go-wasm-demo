@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go + WebAssembly</title>
+    <script src="wasm_exec.js"></script>
+    <style>
+        body {
+          background-color: black;
+        }
+        #content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+        }
+        #name {
+            font-size: 5em;
+            font-family: monospace;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div id="name"></div>
+    </div>
+    <script>
+        const initWasm = async () => {
+            const go = new Go();
+            const response = await fetch('main.wasm');
+            const buffer = await response.arrayBuffer();
+            const result = await WebAssembly.instantiate(buffer, go.importObject);
+            go.run(result.instance)
+        }
+
+        initWasm().then(() => {
+            const elem = document.getElementById('name');
+            elem.innerHTML = greet('Seif');
+        });
+    </script>
+</body>
+</html>
